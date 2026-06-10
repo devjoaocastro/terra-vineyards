@@ -305,8 +305,9 @@ function PlotPin({
         <ringGeometry args={[0.5, 0.57, 48]} />
         <meshBasicMaterial color="#e3a857" transparent opacity={0.4} side={THREE.DoubleSide} />
       </mesh>
-      {/* label */}
-      <Html center position={[0, 2.1, 0]} className="pin-html" zIndexRange={[20, 0]}>
+      {/* label — portal into scroll.fixed: the default target is the scrolled
+          element, which shifts the label offscreen by scrollTop on pages > 0 */}
+      <Html center position={[0, 2.1, 0]} className="pin-html" zIndexRange={[20, 0]} portal={{ current: scroll.fixed }}>
         <div ref={label} className={`pin-label ${hovered ? 'pin-label--hot' : ''}`} style={{ opacity: 0, display: 'none' }}>
           <strong>{name}</strong>
           <span>{detail}</span>
@@ -344,10 +345,11 @@ function WineGlass() {
   })
 
   return (
-    <group position={[1.7, 1.5, -SEG * 2]}>
+    <group position={[1.7, 1.25, -SEG * 2]}>
       <Float speed={1.3} rotationIntensity={0.12} floatIntensity={0.45}>
         <group
           ref={group}
+          scale={1.35}
           onPointerOver={(e) => {
             e.stopPropagation()
             setHovered(true)
