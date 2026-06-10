@@ -1,0 +1,879 @@
+:root {
+  --plum: #1a0f14;
+  --burgundy: #7b2c3f;
+  --gold: #e3a857;
+  --sand: #efe3d0;
+  --scroll: 0;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--plum);
+  color: var(--sand);
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+  font-weight: 300;
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+#root {
+  position: fixed;
+  inset: 0;
+}
+
+/* ---------------------------------------------------------------- */
+/* Loader (intro veil)                                               */
+/* ---------------------------------------------------------------- */
+
+.loader {
+  position: fixed;
+  inset: 0;
+  background: var(--plum);
+  z-index: 90;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  transition: opacity 0.9s cubic-bezier(0.6, 0, 0.3, 1), transform 0.9s cubic-bezier(0.6, 0, 0.3, 1);
+}
+
+.loader--done {
+  opacity: 0;
+  transform: scale(1.12);
+  pointer-events: none;
+}
+
+.loader__counter {
+  font-family: 'Instrument Serif', Georgia, serif;
+  font-size: clamp(80px, 16vw, 220px);
+  line-height: 1;
+  color: var(--sand);
+}
+
+.loader__counter span {
+  font-size: 0.35em;
+  color: var(--gold);
+}
+
+.loader__label {
+  font-size: 12px;
+  letter-spacing: 0.4em;
+  text-transform: uppercase;
+  color: rgba(239, 227, 208, 0.5);
+  margin: 0;
+}
+
+/* ---------------------------------------------------------------- */
+/* Custom cursor                                                     */
+/* ---------------------------------------------------------------- */
+
+@media (pointer: fine) {
+  * {
+    cursor: none !important;
+  }
+
+  .cursor-dot {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 6px;
+    height: 6px;
+    margin: -3px 0 0 -3px;
+    background: #fff;
+    border-radius: 50%;
+    z-index: 100;
+    pointer-events: none;
+    mix-blend-mode: difference;
+  }
+
+  .cursor-ring {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 36px;
+    height: 36px;
+    margin: -18px 0 0 -18px;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    border-radius: 50%;
+    z-index: 100;
+    pointer-events: none;
+    mix-blend-mode: difference;
+    transition: border-color 0.25s ease;
+  }
+
+  .cursor-ring.is-active {
+    border-color: var(--gold);
+  }
+}
+
+@media (pointer: coarse) {
+  .cursor-dot,
+  .cursor-ring {
+    display: none;
+  }
+}
+
+/* ---------------------------------------------------------------- */
+/* Fixed UI: header + progress bar                                   */
+/* ---------------------------------------------------------------- */
+
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 28px 40px;
+  z-index: 40;
+  pointer-events: none;
+}
+
+.header button {
+  pointer-events: auto;
+}
+
+.logo {
+  font-family: 'Instrument Serif', Georgia, serif;
+  font-weight: 400;
+  font-size: 18px;
+  letter-spacing: 0.26em;
+  background: none;
+  border: none;
+  color: var(--sand);
+  padding: 0;
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+}
+
+.logo__est {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 9px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--gold);
+  opacity: 0.85;
+}
+
+.nav button {
+  background: none;
+  border: none;
+  color: var(--sand);
+  opacity: 0.6;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  margin-left: 28px;
+  padding: 4px 0;
+  transition: opacity 0.25s ease, color 0.25s ease;
+}
+
+.nav button:hover {
+  opacity: 1;
+  color: var(--gold);
+}
+
+.progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  z-index: 50;
+}
+
+.progress__bar {
+  height: 100%;
+  background: linear-gradient(90deg, rgba(123, 44, 63, 0.7), var(--gold));
+  transform-origin: left center;
+  transform: scaleX(var(--scroll));
+}
+
+/* ---------------------------------------------------------------- */
+/* Scrolled HTML interface                                           */
+/* ---------------------------------------------------------------- */
+
+.interface {
+  width: 100%;
+}
+
+.section {
+  position: relative;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 0 8vw;
+  pointer-events: none;
+}
+
+.section a,
+.section button,
+.section .wine-card {
+  pointer-events: auto;
+}
+
+.section--center {
+  align-items: center;
+  text-align: center;
+}
+
+.section--left {
+  align-items: flex-start;
+}
+
+.section--right {
+  align-items: flex-end;
+  text-align: right;
+}
+
+.section--left h2,
+.section--left .body,
+.section--right h2,
+.section--right .body {
+  max-width: 46vw;
+}
+
+/* ghost section numbers ------------------------------------------- */
+
+.section[data-num]::before {
+  content: attr(data-num);
+  position: absolute;
+  top: 9vh;
+  right: 5vw;
+  font-family: 'Instrument Serif', Georgia, serif;
+  font-size: clamp(90px, 17vw, 260px);
+  line-height: 1;
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(227, 168, 87, 0.16);
+  pointer-events: none;
+}
+
+.section--right[data-num]::before {
+  right: auto;
+  left: 5vw;
+}
+
+/* typography ------------------------------------------------------ */
+
+.tagline,
+.kicker {
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: rgba(239, 227, 208, 0.55);
+  margin: 0 0 8px;
+}
+
+.hero-title,
+h2 {
+  font-family: 'Instrument Serif', Georgia, serif;
+  font-weight: 400;
+  letter-spacing: 0;
+  margin: 24px 0 28px;
+}
+
+.hero-title {
+  font-size: clamp(50px, 9vw, 132px);
+  line-height: 1.02;
+}
+
+h2 {
+  font-size: clamp(38px, 6vw, 90px);
+  line-height: 1.04;
+  margin-top: 0;
+}
+
+em {
+  font-style: italic;
+  font-weight: 400;
+  color: var(--gold);
+}
+
+.hero-sub,
+.body {
+  font-size: clamp(15px, 1.4vw, 19px);
+  line-height: 1.7;
+  color: rgba(239, 227, 208, 0.72);
+  max-width: 560px;
+  margin: 0 0 36px;
+}
+
+.hint {
+  font-size: 11px;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--gold);
+  opacity: 0.8;
+  margin: 18px 0 0;
+}
+
+/* hero entrance --------------------------------------------------- */
+
+.section--hero > * {
+  animation: fadeUp 1.1s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
+.section--hero > *:nth-child(1) { animation-delay: 2.5s; }
+.section--hero > *:nth-child(2) { animation-delay: 2.65s; }
+.section--hero > *:nth-child(3) { animation-delay: 2.85s; }
+.section--hero > *:nth-child(4) { animation-delay: 3s; }
+.section--hero > *:nth-child(5) { animation-delay: 3.2s; }
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(28px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* scroll hint ------------------------------------------------------ */
+
+.scroll-hint {
+  position: absolute;
+  bottom: 4.5vh;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.scroll-hint__line {
+  display: block;
+  width: 1px;
+  height: 56px;
+  background: rgba(239, 227, 208, 0.18);
+  position: relative;
+  overflow: hidden;
+}
+
+.scroll-hint__line::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 40%;
+  background: linear-gradient(180deg, transparent, var(--gold));
+  animation: scrollDrop 1.8s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes scrollDrop {
+  from {
+    transform: translateY(-100%);
+  }
+  to {
+    transform: translateY(260%);
+  }
+}
+
+.scroll-hint__label {
+  font-size: 10px;
+  letter-spacing: 0.4em;
+  text-transform: uppercase;
+  color: rgba(239, 227, 208, 0.45);
+}
+
+/* CTAs ------------------------------------------------------------ */
+
+.cta {
+  display: inline-block;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--sand);
+  text-decoration: none;
+  background: rgba(239, 227, 208, 0.02);
+  border: 1px solid rgba(239, 227, 208, 0.3);
+  border-radius: 999px;
+  padding: 16px 38px;
+  backdrop-filter: blur(8px);
+  transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.cta:hover {
+  border-color: var(--gold);
+  box-shadow: 0 0 42px rgba(227, 168, 87, 0.35);
+  transform: translateY(-2px);
+}
+
+.cta--big {
+  font-size: clamp(14px, 1.6vw, 20px);
+  padding: 20px 48px;
+  letter-spacing: 0.14em;
+  text-transform: none;
+}
+
+.visit-address {
+  margin-top: 30px;
+  font-size: 11px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(239, 227, 208, 0.45);
+}
+
+/* plot pin labels (drei Html) -------------------------------------- */
+
+.pin-html {
+  pointer-events: none;
+}
+
+.pin-label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  white-space: nowrap;
+  transition: transform 0.25s ease;
+}
+
+.pin-label strong {
+  font-family: 'Instrument Serif', Georgia, serif;
+  font-weight: 400;
+  font-size: 20px;
+  color: var(--sand);
+}
+
+.pin-label span {
+  font-size: 10px;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+
+.pin-label--hot {
+  transform: scale(1.12);
+}
+
+/* wine cards -------------------------------------------------------- */
+
+.section--wines h2 {
+  margin-bottom: 16px;
+}
+
+.wines {
+  list-style: none;
+  margin: 18px 0 0;
+  padding: 0;
+  display: flex;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+
+.wine-card {
+  width: min(280px, 27vw);
+  padding: 26px 24px 24px;
+  border: 1px solid rgba(239, 227, 208, 0.16);
+  border-radius: 14px;
+  background: rgba(26, 15, 20, 0.5);
+  backdrop-filter: blur(10px);
+  transition: border-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.wine-card:hover {
+  border-color: var(--gold);
+  transform: translateY(-6px);
+  box-shadow: 0 18px 48px rgba(123, 44, 63, 0.35);
+}
+
+.wine-card h3 {
+  font-family: 'Instrument Serif', Georgia, serif;
+  font-weight: 400;
+  font-size: 23px;
+  margin: 0 0 4px;
+  color: var(--sand);
+}
+
+.wine-card__vintage {
+  font-style: italic;
+  color: var(--gold);
+  font-size: 0.85em;
+}
+
+.wine-card__price {
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  color: var(--gold);
+  margin: 0 0 14px;
+}
+
+.wine-card__notes {
+  font-size: 13px;
+  line-height: 1.65;
+  color: rgba(239, 227, 208, 0.66);
+  margin: 0;
+}
+
+/* stats ------------------------------------------------------------ */
+
+.stats {
+  display: flex;
+  gap: clamp(40px, 7vw, 96px);
+  margin-top: 16px;
+}
+
+.stats div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.stats strong {
+  font-family: 'Instrument Serif', Georgia, serif;
+  font-weight: 400;
+  font-size: clamp(44px, 6vw, 88px);
+  line-height: 1;
+  color: var(--sand);
+}
+
+.stats span {
+  font-size: 12px;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: rgba(239, 227, 208, 0.55);
+}
+
+/* ---------------------------------------------------------------- */
+/* Footer — split editorial: estate map on sand / contact on plum    */
+/* ---------------------------------------------------------------- */
+
+.footer-section {
+  position: relative;
+  height: 100vh;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr auto;
+  pointer-events: auto;
+}
+
+/* left half — the map, drawn with divs on sand ---------------------- */
+
+.footer-map {
+  grid-row: 1;
+  background: var(--sand);
+  color: var(--plum);
+  padding: 9vh 4vw 4vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.footer-map__title {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  margin: 0;
+  color: rgba(26, 15, 20, 0.75);
+}
+
+.map-canvas {
+  position: relative;
+  flex: 1;
+  margin: 24px 0 18px;
+  border: 1px solid rgba(26, 15, 20, 0.3);
+  overflow: hidden;
+  background:
+    repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(26, 15, 20, 0.05) 40px),
+    repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(26, 15, 20, 0.05) 40px);
+}
+
+.map-river {
+  position: absolute;
+  left: -14%;
+  top: 34%;
+  width: 128%;
+  height: 70%;
+  border-top: 4px solid rgba(65, 101, 125, 0.85);
+  border-radius: 50% 50% 0 0 / 90% 90% 0 0;
+  transform: rotate(-7deg);
+}
+
+.map-river--bank {
+  top: 37%;
+  border-top-width: 1px;
+  border-top-color: rgba(65, 101, 125, 0.4);
+}
+
+.map-river-label {
+  position: absolute;
+  left: 8%;
+  top: 56%;
+  font-size: 10px;
+  font-style: italic;
+  letter-spacing: 0.18em;
+  color: rgba(65, 101, 125, 0.9);
+  transform: rotate(-7deg);
+}
+
+.map-plot {
+  position: absolute;
+  border: 1.5px solid rgba(26, 15, 20, 0.55);
+  background: rgba(123, 44, 63, 0.07);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
+}
+
+.map-plot span {
+  font-family: 'Instrument Serif', Georgia, serif;
+  font-size: clamp(20px, 2.4vw, 34px);
+  line-height: 1;
+}
+
+.map-plot small {
+  font-size: 8px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(26, 15, 20, 0.6);
+}
+
+.map-plot--a {
+  left: 8%;
+  top: 10%;
+  width: 28%;
+  height: 22%;
+  transform: rotate(-4deg);
+}
+
+.map-plot--b {
+  left: 46%;
+  top: 7%;
+  width: 32%;
+  height: 19%;
+  transform: rotate(3deg);
+}
+
+.map-plot--c {
+  left: 56%;
+  top: 64%;
+  width: 27%;
+  height: 24%;
+  transform: rotate(-2deg);
+}
+
+.map-house {
+  position: absolute;
+  left: 18%;
+  top: 72%;
+  font-size: 26px;
+  line-height: 1;
+  color: var(--burgundy);
+}
+
+.map-north {
+  position: absolute;
+  right: 5%;
+  top: 5%;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-align: center;
+}
+
+.map-north::before {
+  content: '↑';
+  display: block;
+  font-size: 20px;
+  line-height: 1;
+  margin-bottom: 2px;
+}
+
+.footer-map__legend {
+  margin: 0;
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(26, 15, 20, 0.55);
+}
+
+/* right half — quote, contact, hours, awards on plum ---------------- */
+
+.footer-info {
+  grid-row: 1;
+  background: var(--plum);
+  border-left: 1px solid rgba(227, 168, 87, 0.25);
+  padding: 9vh 4vw 4vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 4vh;
+}
+
+.footer-quote {
+  font-family: 'Instrument Serif', Georgia, serif;
+  font-style: italic;
+  font-weight: 400;
+  font-size: clamp(26px, 2.8vw, 42px);
+  line-height: 1.25;
+  color: var(--sand);
+  margin: 0;
+  max-width: 16em;
+}
+
+.footer-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 28px;
+}
+
+.footer-block h4 {
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin: 0 0 12px;
+}
+
+.footer-block p {
+  font-size: 14px;
+  line-height: 1.8;
+  color: rgba(239, 227, 208, 0.72);
+  margin: 0;
+}
+
+.footer-block a {
+  color: var(--sand);
+  text-decoration: none;
+  border-bottom: 1px solid rgba(227, 168, 87, 0.4);
+  transition: border-color 0.25s ease, color 0.25s ease;
+}
+
+.footer-block a:hover {
+  color: var(--gold);
+  border-color: var(--gold);
+}
+
+.footer-awards {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 14px;
+}
+
+.footer-awards span {
+  font-family: 'Instrument Serif', Georgia, serif;
+  font-size: clamp(15px, 1.4vw, 19px);
+  color: var(--gold);
+}
+
+.footer-awards i {
+  font-style: normal;
+  color: rgba(239, 227, 208, 0.35);
+}
+
+/* full-width bottom strip ------------------------------------------- */
+
+.footer-strip {
+  grid-column: 1 / -1;
+  grid-row: 2;
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 18px 4vw;
+  background: #140a0f;
+  border-top: 1px solid rgba(227, 168, 87, 0.2);
+  font-size: 11px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: rgba(239, 227, 208, 0.45);
+}
+
+/* responsive --------------------------------------------------------- */
+
+@media (max-width: 900px) {
+  .wines {
+    flex-direction: column;
+  }
+
+  .wine-card {
+    width: min(420px, 84vw);
+    padding: 18px 20px;
+  }
+
+  .wine-card__notes {
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 768px) {
+  .nav {
+    display: none;
+  }
+
+  .header {
+    padding: 22px 24px;
+  }
+
+  .section {
+    padding: 0 7vw;
+  }
+
+  .section--left h2,
+  .section--left .body,
+  .section--right h2,
+  .section--right .body {
+    max-width: none;
+  }
+
+  .stats {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .section[data-num]::before {
+    top: 6vh;
+    right: 4vw;
+  }
+
+  .footer-section {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto;
+    height: auto;
+    min-height: 100vh;
+  }
+
+  .footer-map {
+    grid-row: 1;
+    min-height: 46vh;
+  }
+
+  .footer-info {
+    grid-row: 2;
+    border-left: none;
+    border-top: 1px solid rgba(227, 168, 87, 0.25);
+  }
+
+  .footer-strip {
+    grid-row: 3;
+  }
+}
